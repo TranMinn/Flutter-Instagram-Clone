@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/screens/provider_wrapper.dart';
+import 'package:instagram_clone/screens/wrapper.dart';
 
 import 'login_screen.dart';
 
@@ -27,7 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   route(){
     Navigator.pushReplacement(context, MaterialPageRoute(
-        builder: (context) => LoginScreen()
+        // builder: (context) => Wrapper()
+        builder: (context) => ProviderWrapper()
     ));
   }
 

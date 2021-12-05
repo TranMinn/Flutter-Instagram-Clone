@@ -3,6 +3,8 @@ import 'package:instagram_clone/color_constants.dart';
 import 'package:instagram_clone/components/already_have_account_check.dart';
 import 'package:instagram_clone/components/input_field.dart';
 import 'package:instagram_clone/components/text_field_container.dart';
+import 'package:instagram_clone/screens/sign_up_screen.dart';
+import 'package:instagram_clone/services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,6 +14,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+  final AuthService _auth = AuthService();
+
+
   String dropdownValue = 'English (United Kingdom)';
   List listItems = ['English (United Kingdom)', 'Vietnamese', 'French'];
 
@@ -28,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: size.height - 60,
+              minHeight: size.height - 30,
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -107,7 +113,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: size.height * 0.02,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        dynamic result = await _auth.logInWithEmailAndPassword(usernameController.text, passwordController.text);
+                      },
                       child: const TextFieldContainer(
                         color: buttonBgColor,
                         child: Center(
@@ -204,7 +212,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: size.height * 0.02,
                       ),
-                      AlreadyHaveAccountCheck(login: true, press: () {}),
+                      AlreadyHaveAccountCheck(
+                          login: true,
+                          press: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return SignUpScreen();
+                                },
+                              ),
+                            );
+                          }),
                     ],
                   ),
                 ),
