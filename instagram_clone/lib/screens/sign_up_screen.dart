@@ -88,6 +88,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     GestureDetector(
                       onTap: () async {
                         dynamic result = await _auth.registerWithEmailAndPassword(usernameController.text, passwordController.text);
+                        Navigator.pop(context);
                       },
                       child: const TextFieldContainer(
                         color: buttonBgColor,
