@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/components/already_have_account_check.dart';
 import 'package:instagram_clone/components/input_field.dart';

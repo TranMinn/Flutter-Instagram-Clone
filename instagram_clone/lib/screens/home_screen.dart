@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/User.dart';
 import 'package:instagram_clone/services/database.dart';
-import 'package:instagram_clone/widgets/list_users.dart';
+import 'package:instagram_clone/widgets/root_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
       initialData: [],
       child: Scaffold(
         body: Center(
-          child: ListUsers(),
+          child: RootScreen(),
         ),
       ),
     );
