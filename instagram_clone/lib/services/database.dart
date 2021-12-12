@@ -1,8 +1,7 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/Post.dart';
 import 'package:instagram_clone/models/User.dart';
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -17,11 +16,12 @@ class DatabaseService {
   // Collection reference
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('userData');
+  final CollectionReference postCollection = FirebaseFirestore.instance.collection('postData');
 
   // Firebase Storage
   final firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
-  // Update data to collection with specific ID
+  // Update data to user collection with specific ID
   Future updateUserData(String userId, String email, String userName,
       String profileName, String bio, String photoUrl) async {
     return await userCollection.doc(uid).set({
@@ -97,6 +97,39 @@ class DatabaseService {
 
   Stream<MyUserData?> get userData {
     return userCollection.doc(uid).snapshots().map(_userDataFromSnapshot);
+  }
+
+  // ========== POST ==========
+  // Update data to post collection with specific ID
+  Future updatePostData(User currentUser, String postPhotoUrl, String caption,
+      String location) async {
+    return await userCollection.doc(uid).set({
+      'userId': currentUser.uid,
+      'postPhotoUrl': postPhotoUrl,
+      'caption': caption,
+      'location': location,
+      'time': FieldValue.serverTimestamp(),
+      'postOwnerName': currentUser.displayName,
+      'postOwnerPhotoUrl': currentUser.photoURL,
+    });
+  }
+
+  // Post data list from Snapshot
+  List<Post> _listPostDataFromSnapShot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return Post(
+          postPhotoUrl: doc.get('postPhotoUrl') ?? '',
+          caption: doc.get('caption') ?? '',
+          location: doc.get('location') ?? '',
+          time: doc.get('time') ?? '',
+          postOwnerName: doc.get('postOwnerName') ?? '',
+          postOwnerPhotoUrl: doc.get('postOwnerPhotoUrl') ?? '',
+          userId: doc.get('userId') ?? '');
+    }).toList();
+  }
+
+  Stream<List<Post>> get listPostData {
+    return postCollection.snapshots().map(_listPostDataFromSnapShot);
   }
 
 }
