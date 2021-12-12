@@ -18,7 +18,7 @@ class AuthService {
   }
 
   // Register with email & password
-  Future registerWithEmailAndPassword(String email, String password) async {
+  Future registerWithEmailAndPassword(String email, String password, String userName, String profileName) async {
     try {
 
       // Create user
@@ -28,7 +28,7 @@ class AuthService {
       User? user = userCredential.user;
       
       // create a new doc for the user
-      await DatabaseService(uid: user!.uid).updateUserData(user.uid, email, '', '', '', '');
+      await DatabaseService(uid: user!.uid).updateUserData(user.uid, email, userName, profileName, '', '');
       
       return _userFromFirebase(user!);
     } catch (e) {

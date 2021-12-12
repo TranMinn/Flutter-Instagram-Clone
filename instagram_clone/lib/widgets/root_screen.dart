@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/User.dart';
 import 'package:instagram_clone/screens/activity_screen.dart';
 import 'package:instagram_clone/screens/profile_screen.dart';
 import 'package:instagram_clone/screens/reels_screen.dart';
 import 'package:instagram_clone/screens/search_screen.dart';
 import 'package:instagram_clone/screens/upload_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:instagram_clone/services/database.dart';
+import 'package:instagram_clone/widgets/loading_widget.dart';
+import 'package:provider/provider.dart';
 
 import 'feed.dart';
 
@@ -15,6 +21,7 @@ class RootScreen extends StatefulWidget {
 }
 
 class _RootScreenState extends State<RootScreen> {
+  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
   int pageIndex = 0;
 
   @override
@@ -94,9 +101,7 @@ class _RootScreenState extends State<RootScreen> {
         title: Text("Activity"),
       );
     } else {
-      return AppBar(
-        title: Text("Account"),
-      );
+      return profileScreenAppbar();
     }
   }
 
@@ -145,5 +150,61 @@ class _RootScreenState extends State<RootScreen> {
     setState(() {
       pageIndex = index;
     });
+  }
+
+  // Profile screen Appbar
+  Widget profileScreenAppbar(){
+    return StreamBuilder<MyUserData?>(
+      stream : DatabaseService(uid: currentUserId).userData,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return LoadingWidget();
+        } else {
+          MyUserData? myUserData = snapshot.data;
+          return AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,
+            title: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 3, right: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '${myUserData!.profileName}',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        Icon(Icons.keyboard_arrow_down, color: Colors.black)
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        SvgPicture.asset(
+                          "assets/icons/upload_icon.svg",
+                          width: 26,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 10),
+                        SvgPicture.asset(
+                          "assets/icons/menu_icon.svg",
+                          width: 26,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+      }
+    );
   }
 }

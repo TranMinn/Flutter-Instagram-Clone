@@ -9,14 +9,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<List<MyUserData>>.value(
-      value: DatabaseService().userData,
-      initialData: [],
-      child: Scaffold(
-        body: Center(
-          child: RootScreen(),
-        ),
-      ),
+    //   return StreamProvider<List<MyUserData>>.value(
+    //     value: DatabaseService().userData,
+    //     initialData: [],
+    //     child: Scaffold(
+    //       body: Center(
+    //         child: RootScreen(),
+    //       ),
+    //     ),
+    //   );
+    // }
+
+    return Scaffold(
+      body: RootScreen(),
     );
   }
 }
