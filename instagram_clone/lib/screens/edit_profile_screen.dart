@@ -144,11 +144,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     labelText: 'Name',
                   ),
                   controller: nameController,
-                  onChanged: (value) {
-                    setState(() {
-                      nameController.text = value;
-                    });
-                  },
                 ),
               ),
               Padding(
@@ -159,11 +154,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     labelText: 'Username',
                   ),
                   controller: usernameController,
-                  onChanged: (value) {
-                    setState(() {
-                      usernameController.text = value;
-                    });
-                  },
                 ),
               ),
               Padding(
@@ -174,11 +164,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     labelText: 'Bio',
                   ),
                   controller: bioController,
-                  onChanged: (value) {
-                    setState(() {
-                      bioController.text = value;
-                    });
-                  },
                 ),
               ),
             ],
