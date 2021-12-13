@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:instagram_clone/services/database.dart';
+import 'package:instagram_clone/widgets/root_screen.dart';
 
 class UploadScreen extends StatefulWidget {
   final File imageFile;
@@ -27,24 +28,24 @@ class _UploadScreenState extends State<UploadScreen> {
   final captionController = TextEditingController();
   final locationController = TextEditingController();
 
-  late Position _currentPosition;
-  String _currentLatLong = '';
+  // late Position _currentPosition;
+  // String _currentLatLong = '';
 
-  _getCurrentLocation() async {
-    try {
-      Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.best,
-              forceAndroidLocationManager: true)
-          .then((Position position) {
-        setState(() {
-          _currentPosition = position;
-          _currentLatLong = "${_currentPosition.latitude}, ${_currentPosition.longitude}";
-        });
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  // _getCurrentLocation() async {
+  //   try {
+  //     Geolocator.getCurrentPosition(
+  //             desiredAccuracy: LocationAccuracy.best,
+  //             forceAndroidLocationManager: true)
+  //         .then((Position position) {
+  //       setState(() {
+  //         _currentPosition = position;
+  //         _currentLatLong = "${_currentPosition.latitude}, ${_currentPosition.longitude}";
+  //       });
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +69,8 @@ class _UploadScreenState extends State<UploadScreen> {
               await DatabaseService().uploadPhoto(widget.imagePath, widget.imageFileName);
               dynamic url = await DatabaseService().downloadUrl(widget.imageFileName);
               print(url);
-              await DatabaseService(uid: currentUser!.uid).updatePostData(currentUser!, url, captionController.text, _currentLatLong);
+              await DatabaseService(uid: currentUser!.uid).updatePostData(currentUser!, url, captionController.text, '_currentLatLong');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RootScreen()));
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 10),
@@ -118,10 +120,11 @@ class _UploadScreenState extends State<UploadScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
-            child: (_currentPosition != null)
-                ? Text(
-                    "Location: ${_currentLatLong}")
-                : Text('Can not define location!'),
+            // child: (_currentPosition != null)
+            //     ? Text(
+            //         "Location: ${_currentLatLong}")
+            //     : Text('Can not define location!'),
+            child: Text('Location'),
           )
         ],
       ),

@@ -103,7 +103,7 @@ class DatabaseService {
   // Update data to post collection with specific ID
   Future updatePostData(User currentUser, String postPhotoUrl, String caption,
       String location) async {
-    return await userCollection.doc(uid).set({
+    return await postCollection.doc(uid).set({
       'userId': currentUser.uid,
       'postPhotoUrl': postPhotoUrl,
       'caption': caption,
