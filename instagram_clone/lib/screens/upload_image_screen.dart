@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/screens/upload_screen.dart';
+import 'package:instagram_clone/helper/image_processing.dart';
+import 'package:instagram_clone/screens/upload_post_screen.dart';
 
 class UploadImageScreen extends StatefulWidget {
   const UploadImageScreen({Key? key}) : super(key: key);
@@ -13,25 +12,9 @@ class UploadImageScreen extends StatefulWidget {
 }
 
 class _UploadImageScreenState extends State<UploadImageScreen> {
-  late File imageFile;
-  late String imagePath;
-  String fileName = '';
 
-  Future _pickPhoto(String action) async {
-    var pickedFile;
-    action == 'Gallery'
-        ? pickedFile =
-            await ImagePicker().pickImage(source: ImageSource.gallery)
-        : await ImagePicker().pickImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() {
-        imagePath = pickedFile.path;
-        imageFile = File(imagePath);
-        fileName = pickedFile.name;
-      });
-    }
-  }
+  ImageProcessing imageProcessing = ImageProcessing();
+  XFile? pickedFile;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +35,12 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UploadScreen(imageFile: imageFile, imagePath: imagePath, imageFileName: fileName)));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UploadScreen(
+                            pickedFile: pickedFile,
+                          )));
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 10),
@@ -73,8 +61,8 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
-                  onTap: (){
-                    _pickPhoto('Gallery');
+                  onTap: () async {
+                    pickedFile = await imageProcessing.pickPhoto('Gallery');
                   },
                   child: Text(
                     'Gallery',
@@ -82,8 +70,8 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    _pickPhoto('Camera');
+                  onTap: () async {
+                    pickedFile = await imageProcessing.pickPhoto('Camera');
                   },
                   child: Container(
                     height: 50,
@@ -103,9 +91,6 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                 ),
               ],
             ),
-
-            SizedBox(height: 20,),
-            Text('$fileName', style: TextStyle(color: Colors.green, fontSize: 15),),
           ],
         ),
       ),

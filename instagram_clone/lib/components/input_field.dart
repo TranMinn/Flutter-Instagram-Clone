@@ -1,15 +1,14 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/color_constants.dart';
 import 'package:instagram_clone/components/text_field_container.dart';
 
 class InputField extends StatelessWidget {
-  final ValueChanged<String> onChanged;
   final String hintText;
+  final String errorText;
   final TextEditingController controller;
   final bool obscureText;
-  const InputField({Key? key, required this.onChanged, required this.hintText, required this.controller, required this.obscureText}) : super(key: key);
+  const InputField({Key? key, required this.hintText, required this.controller, required this.obscureText, required this.errorText}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +19,14 @@ class InputField extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 15),
           child: Center(
             child: TextField(
-              onChanged: onChanged,
               controller: controller,
               obscureText: obscureText,
               style: TextStyle(
                 fontSize: size.width * 0.03,
               ),
-              decoration: InputDecoration.collapsed(hintText: hintText),
+              decoration: InputDecoration(hintText: hintText, errorText: errorText, border: InputBorder.none),
+
+              //InputDecoration.collapsed()
             ),
           ),
         ),

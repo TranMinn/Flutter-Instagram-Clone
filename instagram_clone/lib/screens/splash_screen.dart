@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/screens/provider_wrapper.dart';
-import 'package:instagram_clone/screens/wrapper.dart';
-
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -14,7 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -22,16 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
     startTimer();
   }
 
-  startTimer() async{
+  startTimer() async {
     var duration = Duration(seconds: 3);
     return new Timer(duration, route);
   }
 
-  route(){
-    Navigator.pushReplacement(context, MaterialPageRoute(
-        // builder: (context) => Wrapper()
-        builder: (context) => ProviderWrapper()
-    ));
+  route() {
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => ProviderWrapper()));
   }
 
   @override
@@ -41,8 +35,8 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Container(
           child: Image.asset(
             'assets/icons/instagram.png',
-            width: 50,
-            height: 50,
+            width: 60,
+            height: 60,
           ),
         ),
       ),

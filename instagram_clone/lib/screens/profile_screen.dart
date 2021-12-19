@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/color_constants.dart';
 import 'package:instagram_clone/models/User.dart';
 import 'package:instagram_clone/screens/edit_profile_screen.dart';
-import 'package:instagram_clone/services/database.dart';
+import 'package:instagram_clone/view_models/profile_viewModel.dart';
 import 'package:instagram_clone/widgets/loading_widget.dart';
-import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -16,19 +13,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  ProfileViewModel profileViewModel = ProfileViewModel();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return StreamBuilder<MyUserData?>(
-        stream: DatabaseService(uid: currentUserId).userData,
+        stream: profileViewModel.fetchUserData,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return LoadingWidget();
           } else {
             MyUserData? myUserData = snapshot.data;
-            // print(myUserData.profileName);
 
             return Scaffold(
               body: ListView(
@@ -52,7 +48,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       shape: BoxShape.circle,
                                       border: Border.all(width: 1, color: grey),
                                       image: DecorationImage(
-                                          image: myUserData!.photoUrl!.isNotEmpty
+                                          image: myUserData!
+                                                  .photoUrl!.isNotEmpty
                                               ? NetworkImage(
                                                   myUserData!.photoUrl!)
                                               : AssetImage(
@@ -71,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Column(
-                                    children: [
+                                    children: const [
                                       Text(
                                         "0",
                                         style: TextStyle(
@@ -86,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                   Column(
-                                    children: [
+                                    children: const [
                                       Text(
                                         "0",
                                         style: TextStyle(
@@ -101,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                   Column(
-                                    children: [
+                                    children: const [
                                       Text(
                                         "0",
                                         style: TextStyle(
@@ -121,7 +118,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                         SizedBox(height: 15),
-                        Text(myUserData.userName!.isEmpty ? 'Name' : myUserData.userName!),
+                        Text(myUserData.userName!.isEmpty
+                            ? 'Name'
+                            : myUserData.userName!),
                         Text(myUserData.bio!.isEmpty ? 'Bio' : myUserData.bio!),
                         SizedBox(height: 15),
                         Row(
@@ -132,8 +131,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditProfileScreen(name: myUserData.userName!, username: myUserData.profileName!, bio: myUserData.bio!, photoUrl: myUserData.photoUrl!, )));
+                                        builder: (context) => EditProfileScreen(
+                                              myUserData: myUserData,
+                                            )));
                               },
                               child: Container(
                                 height: 35,

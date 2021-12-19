@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:instagram_clone/models/User.dart';
-import 'package:instagram_clone/services/database.dart';
+import 'package:instagram_clone/services/user_services.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,7 +28,7 @@ class AuthService {
       User? user = userCredential.user;
       
       // create a new doc for the user
-      await DatabaseService(uid: user!.uid).updateUserData(user.uid, email, userName, profileName, '', '');
+      await UserService(uid: user!.uid).updateUserData(user.uid, email, userName, profileName, '', '');
       
       return _userFromFirebase(user!);
     } catch (e) {

@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/components/already_have_account_check.dart';
 import 'package:instagram_clone/components/input_field.dart';
 import 'package:instagram_clone/components/text_field_container.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
-import 'package:instagram_clone/services/auth.dart';
+import 'package:instagram_clone/screens/root_screen.dart';
+import 'package:instagram_clone/view_models/auth_viewModel.dart';
 
 import '../color_constants.dart';
 
@@ -16,14 +16,22 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  TextEditingController usernameController = TextEditingController();
+  AuthViewModel authViewModel = AuthViewModel();
+
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController profileNameController = TextEditingController();
 
-  final AuthService _auth = AuthService();
+  @override
+  void initState() {
+    super.initState();
 
-  bool inputTextNotNull = false;
+    emailController
+        .addListener(() => authViewModel.emailSink.add(emailController.text));
+    passwordController.addListener(
+        () => authViewModel.passwordSink.add(passwordController.text));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,46 +58,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(
                       height: size.height * 0.03,
                     ),
-                    InputField(
-                      onChanged: (text) {},
-                      controller: usernameController,
-                      obscureText: false,
-                      hintText: 'Email address',
+                    StreamBuilder<String>(
+                        stream: authViewModel.emailStream,
+                        builder: (context, snapshot) {
+                          return InputField(
+                            controller: emailController,
+                            obscureText: false,
+                            hintText: 'Email address',
+                            errorText: snapshot.data ?? '',
+                          );
+                        }),
+                    SizedBox(
+                      height: size.height * 0.02,
                     ),
+                    StreamBuilder<String>(
+                        stream: authViewModel.passwordStream,
+                        builder: (context, snapshot) {
+                          return InputField(
+                            controller: passwordController,
+                            obscureText: true,
+                            hintText: 'Password',
+                            errorText: snapshot.data ?? '',
+                          );
+                        }),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
                     InputField(
-                      onChanged: (text) {},
-                      controller: passwordController,
-                      obscureText: true,
-                      hintText: 'Password',
-                    ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    InputField(
-                      onChanged: (text) {},
                       controller: nameController,
                       obscureText: false,
                       hintText: 'Your name',
+                      errorText: '',
                     ),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
                     InputField(
-                      onChanged: (text) {},
                       controller: profileNameController,
                       obscureText: false,
                       hintText: 'Profile name',
+                      errorText: '',
                     ),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
                     GestureDetector(
                       onTap: () async {
-                        dynamic result = await _auth.registerWithEmailAndPassword(usernameController.text, passwordController.text, nameController.text, profileNameController.text);
-                        Navigator.pop(context);
+                        dynamic result = await authViewModel.signUpUser(
+                            emailController.text,
+                            passwordController.text,
+                            nameController.text,
+                            profileNameController.text);
+                        if (result != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RootScreen()));
+                        }
+                        print('Signed Up');
                       },
                       child: const TextFieldContainer(
                         color: buttonBgColor,

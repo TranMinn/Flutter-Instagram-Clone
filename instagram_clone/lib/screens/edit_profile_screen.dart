@@ -1,22 +1,10 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/User.dart';
-import 'package:instagram_clone/services/database.dart';
-import 'package:provider/provider.dart';
+import 'package:instagram_clone/view_models/edit_profile_viewModel.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  final String photoUrl, bio, username, name;
-  const EditProfileScreen(
-      {Key? key,
-      required this.photoUrl,
-      required this.bio,
-      required this.username,
-      required this.name})
+  final MyUserData myUserData;
+  const EditProfileScreen({Key? key, required this.myUserData})
       : super(key: key);
 
   @override
@@ -24,35 +12,19 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  final currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  EditProfileViewModel editProfileViewModel = EditProfileViewModel();
 
-  final nameController = TextEditingController();
-  final usernameController = TextEditingController();
+  final userNameController = TextEditingController();
+  final profileNameController = TextEditingController();
   final bioController = TextEditingController();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    nameController.text = widget.name;
-    usernameController.text = widget.username;
-    bioController.text = widget.bio;
-  }
-
-  late File _imageFile;
-  late String _imageFileName;
-  late String _imagePath;
-
-  Future _pickPhoto() async {
-    var pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _imageFileName = pickedFile.name;
-        _imagePath = pickedFile.path;
-        _imageFile = File(_imagePath);
-      });
-    }
+    userNameController.text = widget.myUserData.userName!;
+    profileNameController.text = widget.myUserData.profileName!;
+    bioController.text = widget.myUserData.bio!;
   }
 
   @override
@@ -74,11 +46,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           GestureDetector(
             onTap: () async {
-              // Update here
-              await DatabaseService(uid: currentUserId).updateUserProfile(
-                  usernameController.text,
-                  nameController.text,
-                  bioController.text);
+              await editProfileViewModel.updateUserData(userNameController.text,
+                  profileNameController.text, bioController.text);
               print('Updated');
               Navigator.pop(context);
             },
@@ -108,8 +77,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(80),
                         image: DecorationImage(
-                          image: widget.photoUrl.isNotEmpty
-                              ? NetworkImage(widget.photoUrl)
+                          image: widget.myUserData.photoUrl!.isNotEmpty
+                              ? NetworkImage(widget.myUserData.photoUrl!)
                               : AssetImage(
                                       'assets/icons/default_profile_image.jpg')
                                   as ImageProvider,
@@ -120,7 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               GestureDetector(
                 onTap: _showImageDialog,
-                child: Padding(
+                child: const Padding(
                   padding: EdgeInsets.only(top: 12),
                   child: Text(
                     'Change profile photo',
@@ -137,29 +106,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Name',
                     labelText: 'Name',
                   ),
-                  controller: nameController,
+                  controller: userNameController,
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Username',
                     labelText: 'Username',
                   ),
-                  controller: usernameController,
+                  controller: profileNameController,
                 ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Bio',
                     labelText: 'Bio',
                   ),
@@ -181,13 +152,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               SimpleDialogOption(
                 child: Text('New Profile Photo'),
-                onPressed: () async {
-                  await _pickPhoto();
-                  await DatabaseService().uploadPhoto(_imagePath, _imageFileName);
-                  print(_imageFileName);
-                  dynamic url = await DatabaseService().downloadUrl(_imageFileName);
-                  print(url);
-                  await DatabaseService(uid: currentUserId).updatePhoto(url);
+                onPressed: () {
+                  editProfileViewModel.updateProfilePhoto();
                   Navigator.pop(context);
                 },
               ),
