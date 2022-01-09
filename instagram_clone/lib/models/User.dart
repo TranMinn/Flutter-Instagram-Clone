@@ -10,6 +10,8 @@ class MyUserData {
   final String? profileName;
   final String? bio;
   final String? photoUrl;
+  final List? following;
+  final List? followers;
 
   MyUserData(
       {this.profileName,
@@ -17,5 +19,7 @@ class MyUserData {
       this.userName,
       this.bio,
       this.photoUrl,
-      this.userId});
+      this.userId,
+      this.following,
+      this.followers});
 }

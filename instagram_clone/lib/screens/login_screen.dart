@@ -5,6 +5,7 @@ import 'package:instagram_clone/components/input_field.dart';
 import 'package:instagram_clone/components/text_field_container.dart';
 import 'package:instagram_clone/screens/sign_up_screen.dart';
 import 'package:instagram_clone/view_models/auth_viewModel.dart';
+import 'package:instagram_clone/view_models/login_viewModel.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,6 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   AuthViewModel authViewModel = AuthViewModel();
+  LoginViewModel loginViewModel = LoginViewModel();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -114,17 +116,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        // print(emailController.text);
-                        // print(passwordController.text);
-                        // dynamic result = await _auth.logInWithEmailAndPassword(emailController.text, passwordController.text);
-                        // print(result);
-
-                        await authViewModel.loginUser(
+                        await loginViewModel.loginUser(
                             emailController.text, passwordController.text);
                         print('Logged in');
-                        // if(result != null){
-                        //   Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                        // }
                       },
                       child: const TextFieldContainer(
                         color: buttonBgColor,

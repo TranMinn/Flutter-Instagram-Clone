@@ -8,22 +8,21 @@ class EditProfileViewModel {
 
   final currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-  Future updateProfilePhoto() async {
+  Future<String> getProfilePhotoUrl() async {
     XFile? pickedFile = await ImageProcessing().pickPhoto('Gallery');
     final filePath = pickedFile?.path;
     final fileName = pickedFile?.name;
 
     await ImageProcessing().uploadPhoto(filePath!, fileName!);
 
-    dynamic photoUrl = await ImageProcessing().downloadUrl(fileName);
-    print(photoUrl);
-
-    await UserService(uid: currentUserId).updatePhoto(photoUrl);
+    String photoUrl = await ImageProcessing().downloadUrl(fileName);
+    return photoUrl;
   }
 
   // Update User Profile info
-  Future updateUserData(String userName, String profileName, String bio) async {
-    await UserService(uid: currentUserId).updateUserProfile(userName, profileName, bio);
+  Future updateUserData(String userName, String profileName, String bio, String photoUrl) async {
+
+    await UserService(uid: currentUserId).updateUserProfile(userName, profileName, bio, photoUrl);
   }
 
 }

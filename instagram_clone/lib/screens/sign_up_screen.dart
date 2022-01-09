@@ -5,6 +5,7 @@ import 'package:instagram_clone/components/text_field_container.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/screens/root_screen.dart';
 import 'package:instagram_clone/view_models/auth_viewModel.dart';
+import 'package:instagram_clone/view_models/signUp_viewModel.dart';
 
 import '../color_constants.dart';
 
@@ -17,6 +18,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   AuthViewModel authViewModel = AuthViewModel();
+  SignUpViewModel signUpViewModel = SignUpViewModel();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -104,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     GestureDetector(
                       onTap: () async {
-                        dynamic result = await authViewModel.signUpUser(
+                        dynamic result = await signUpViewModel.signUpUser(
                             emailController.text,
                             passwordController.text,
                             nameController.text,

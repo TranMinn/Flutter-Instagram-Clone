@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/models/User.dart';
 import 'package:instagram_clone/services/user_services.dart';
-import 'package:instagram_clone/view_models/profile_viewModel.dart';
+import 'package:instagram_clone/view_models/account_viewModel.dart';
 import 'package:instagram_clone/view_models/upload_post_viewModel.dart';
 import 'package:instagram_clone/widgets/loading_widget.dart';
 import 'package:instagram_clone/screens/root_screen.dart';
@@ -20,7 +20,6 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  // final currentUserId = FirebaseAuth.instance.currentUser!.uid;
   UploadPostViewModel uploadPostViewModel = UploadPostViewModel();
 
   final captionController = TextEditingController();
@@ -29,7 +28,7 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<MyUserData?>(
-        stream: ProfileViewModel().fetchUserData,
+        stream: AccountViewModel().fetchCurrentUserData,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return LoadingWidget();

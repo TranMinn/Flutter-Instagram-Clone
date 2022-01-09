@@ -18,6 +18,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final profileNameController = TextEditingController();
   final bioController = TextEditingController();
 
+  String? newPhotoUrl;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +27,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     userNameController.text = widget.myUserData.userName!;
     profileNameController.text = widget.myUserData.profileName!;
     bioController.text = widget.myUserData.bio!;
+    newPhotoUrl = widget.myUserData.photoUrl!;
   }
 
   @override
@@ -46,10 +49,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           GestureDetector(
             onTap: () async {
-              await editProfileViewModel.updateUserData(userNameController.text,
-                  profileNameController.text, bioController.text);
-              print('Updated');
-              Navigator.pop(context);
+              await editProfileViewModel
+                  .updateUserData(
+                      userNameController.text,
+                      profileNameController.text,
+                      bioController.text,
+                      newPhotoUrl!)
+                  .then((value) {
+                print('Updated');
+                Navigator.pop(context);
+              });
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 10),
@@ -77,9 +86,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(80),
                         image: DecorationImage(
-                          image: widget.myUserData.photoUrl!.isNotEmpty
-                              ? NetworkImage(widget.myUserData.photoUrl!)
-                              : AssetImage(
+                          image: newPhotoUrl.toString().isNotEmpty
+                              ? NetworkImage(newPhotoUrl.toString())
+                              : const AssetImage(
                                       'assets/icons/default_profile_image.jpg')
                                   as ImageProvider,
                           fit: BoxFit.cover,
@@ -151,14 +160,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return SimpleDialog(
             children: [
               SimpleDialogOption(
-                child: Text('New Profile Photo'),
-                onPressed: () {
-                  editProfileViewModel.updateProfilePhoto();
-                  Navigator.pop(context);
+                child: const Text('New Profile Photo'),
+                onPressed: () async {
+                  await editProfileViewModel.getProfilePhotoUrl().then((value) {
+                    setState(() {
+                      newPhotoUrl = value;
+                    });
+                    print(value);
+                    Navigator.pop(context);
+                  });
+                  // Navigator.pop(context);
                 },
               ),
               SimpleDialogOption(
-                child: Text('Import From Facebook'),
+                child: const Text('Import From Facebook'),
                 onPressed: () {},
               ),
             ],

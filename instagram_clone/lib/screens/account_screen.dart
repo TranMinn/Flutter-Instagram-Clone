@@ -1,25 +1,29 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/color_constants.dart';
 import 'package:instagram_clone/models/User.dart';
+import 'package:instagram_clone/models/UserPost.dart';
 import 'package:instagram_clone/screens/edit_profile_screen.dart';
-import 'package:instagram_clone/view_models/profile_viewModel.dart';
+import 'package:instagram_clone/view_models/account_viewModel.dart';
 import 'package:instagram_clone/widgets/loading_widget.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+class AccountScreen extends StatefulWidget {
+  const AccountScreen({Key? key}) : super(key: key);
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _AccountScreenState createState() => _AccountScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  ProfileViewModel profileViewModel = ProfileViewModel();
+class _AccountScreenState extends State<AccountScreen> {
+  AccountViewModel accountViewModel = AccountViewModel();
+  int selectedIndex = 0;
+  int noOfPosts = 0;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return StreamBuilder<MyUserData?>(
-        stream: profileViewModel.fetchUserData,
+        stream: accountViewModel.fetchCurrentUserData,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return LoadingWidget();
@@ -51,8 +55,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           image: myUserData!
                                                   .photoUrl!.isNotEmpty
                                               ? NetworkImage(
-                                                  myUserData!.photoUrl!)
-                                              : AssetImage(
+                                                  myUserData.photoUrl ?? '')
+                                              : const AssetImage(
                                                       'assets/icons/default_profile_image.jpg')
                                                   as ImageProvider,
                                           fit: BoxFit.cover),
@@ -68,14 +72,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Column(
-                                    children: const [
+                                    children: [
                                       Text(
-                                        "0",
-                                        style: TextStyle(
+                                        noOfPosts.toString(),
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      Text(
+                                      const Text(
                                         "Posts",
                                         style: TextStyle(
                                             fontSize: 15, height: 1.5),
@@ -83,14 +87,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                   Column(
-                                    children: const [
+                                    children: [
                                       Text(
-                                        "0",
-                                        style: TextStyle(
+                                        "${myUserData.followers?.length}",
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      Text(
+                                      const Text(
                                         "Followers",
                                         style: TextStyle(
                                             fontSize: 15, height: 1.5),
@@ -98,14 +102,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ],
                                   ),
                                   Column(
-                                    children: const [
+                                    children: [
                                       Text(
-                                        "0",
-                                        style: TextStyle(
+                                        "${myUserData.following?.length}",
+                                        style: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      Text(
+                                      const Text(
                                         "Following",
                                         style: TextStyle(
                                             fontSize: 15, height: 1.5),
@@ -117,12 +121,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 15),
-                        Text(myUserData.userName!.isEmpty
-                            ? 'Name'
-                            : myUserData.userName!),
-                        Text(myUserData.bio!.isEmpty ? 'Bio' : myUserData.bio!),
-                        SizedBox(height: 15),
+                        const SizedBox(height: 15),
+                        Text(myUserData.userName ?? 'Name'),
+                        Text(myUserData.bio ?? 'Bio'),
+                        const SizedBox(height: 15),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -143,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   borderRadius: BorderRadius.circular(5),
                                   color: Colors.white,
                                 ),
-                                child: Center(
+                                child: const Center(
                                   child: Text("Edit Profile"),
                                 ),
                               ),
@@ -156,27 +158,110 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 borderRadius: BorderRadius.circular(5),
                                 color: Colors.white,
                               ),
-                              child: Center(
+                              child: const Center(
                                 child: Icon(Icons.keyboard_arrow_down),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [],
-                        ),
+                        const SizedBox(height: 15),
                       ],
                     ),
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   Container(
                     height: 0.5,
                     width: size.width,
                     decoration:
                         BoxDecoration(color: Colors.grey.withOpacity(0.8)),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 3),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: size.width * 0.5,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedIndex = 0;
+                              });
+                            },
+                            icon: Image.asset(
+                              'assets/icons/grid_icon.png',
+                              width: 25,
+                              height: 25,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: size.width * 0.5,
+                          child: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedIndex = 1;
+                              });
+                            },
+                            icon: Image.asset(
+                              'assets/icons/idBadge_icon.png',
+                              width: 25,
+                              height: 25,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        height: 1,
+                        width: (size.width * 0.5),
+                        decoration: BoxDecoration(
+                            color: selectedIndex == 0
+                                ? Colors.black
+                                : Colors.transparent),
+                      ),
+                      Container(
+                        height: 1,
+                        width: (size.width * 0.5),
+                        decoration: BoxDecoration(
+                            color: selectedIndex == 1
+                                ? Colors.black
+                                : Colors.transparent),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  selectedIndex == 0
+                      ? StreamBuilder<List<PostData>>(
+                          stream: accountViewModel.fetchUserPost(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Container();
+                            } else {
+                              final List<PostData>? listPosts = snapshot.data;
+                              noOfPosts = listPosts?.length ?? 0;
+
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 3,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                  childAspectRatio: 1,
+                                ),
+                                itemCount: listPosts?.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Image.network(
+                                      listPosts?[index].postPhotoUrl ?? '',
+                                      fit: BoxFit.cover);
+                                },
+                              );
+                            }
+                          })
+                      : Container()
                 ],
               ),
             );
