@@ -8,4 +8,12 @@ class LoginViewModel {
     return await _auth.logInWithEmailAndPassword(email, password);
   }
 
+  Future loginWithGoogle() async {
+    return await _auth.logInWithGoogle();
+  }
+
+  Future loginWithFacebook() async {
+    return await _auth.loginWithFacebook();
+  }
+
 }

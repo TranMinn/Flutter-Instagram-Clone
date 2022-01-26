@@ -187,12 +187,36 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: size.height * 0.02,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        await loginViewModel.loginWithFacebook();
+                      },
                       child: const TextFieldContainer(
                         color: buttonBgColor,
                         child: Center(
                           child: Text(
                             'Login with Facebook',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        await loginViewModel.loginWithGoogle();
+                        print('Logged in with Google');
+                      },
+                      child: const TextFieldContainer(
+                        color: buttonBgColor,
+                        child: Center(
+                          child: Text(
+                            'Login with Google',
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
@@ -228,6 +252,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             );
                           }),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
                     ],
                   ),
                 ),
